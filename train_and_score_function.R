@@ -12,6 +12,9 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
     game_list <- if(!score_season){get_game_list(season = season)}else{get_game_list()}
     game_list <- game_list %>% select(-one_of("X"))
     
+    team_id <- game_list %>% select(team_h, home) %>% rename(team = team_h, team_name = home) %>%
+      union(game_list %>% select(team_a, away) %>% rename(team = team_a, team_name = away)) %>% distinct
+    
     train_games <- game_list %>%
       #filter(finished == TRUE)%>% 
       filter(!is.na(team_h_score)) %>% 
@@ -443,7 +446,9 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
                       ) %>% rename_with(.fn = ~ paste0(.x, "_team_a"))
                     , by = c("team_a" = "team_team_a", "id" = "next_fixture_team_a")) %>%
           inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_h")), by = c("team_h" = "team_player_h", "id" = "next_fixture_player_h")) %>%
-          inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_a")), by = c("team_a" = "team_player_a", "id" = "next_fixture_player_a")) #%>%
+          inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_a")), by = c("team_a" = "team_player_a", "id" = "next_fixture_player_a")) %>%
+        left_join(team_id %>% rename_with(.fn = ~ paste0(.x, "_home")), by = c("team_h" = "team_home")) %>%
+          left_join(team_id %>% rename_with(.fn = ~ paste0(.x, "_away")), by = c("team_a" = "team_away")) 
         print("df")
         
         list_df[[i]] <- df %>% mutate(season = paste("20", season, "/20", season+1, sep = ""))
@@ -496,7 +501,9 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
                       ) %>% rename_with(.fn = ~ paste0(.x, "_team_a"))
                     , by = c("team_a" = "team_team_a", "id" = "next_fixture_team_a")) %>%
           inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_h")), by = c("team_h" = "team_player_h", "id" = "next_fixture_player_h")) %>%
-          inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_a")), by = c("team_a" = "team_player_a", "id" = "next_fixture_player_a")) #%>%
+          inner_join(info_available_player %>% rename_with(.fn = ~ paste0(.x, "_player_a")), by = c("team_a" = "team_player_a", "id" = "next_fixture_player_a")) %>%
+          left_join(team_id %>% rename_with(.fn = ~ paste0(.x, "_home")), by = c("team_h" = "team_home")) %>%
+          left_join(team_id %>% rename_with(.fn = ~ paste0(.x, "_away")), by = c("team_a" = "team_away")) 
         print("df")
         
         list_df[[i]] <- df %>% mutate(season = paste("20", season, "/20", season+1, sep = ""))
