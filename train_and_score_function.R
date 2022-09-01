@@ -404,7 +404,7 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
           filter(id > 10) %>%
           # add next fixture so I don't need to do the same thing for both train- and score-df
           union(score_games %>% inner_join(teams_next_game %>% as.data.frame %>% select(id) %>% distinct, by = c("id" = "id"))) %>% # can be more than 10 games since they donät finish the rounds at the same time, but it doesn't matter here.
-          left_join(team_form %>%
+          inner_join(team_form %>%
                       select(
                         -played_at_home,
                         -id,
@@ -425,7 +425,7 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
                       ) %>% rename_with(.fn = ~ paste0(.x, "_team_h"))
                     , by = c("team_h" = "team_team_h", "id" = "next_fixture_team_h")) %>%
           
-          left_join(team_form %>%
+          inner_join(team_form %>%
                       select(
                         -played_at_home,
                         -id,
@@ -459,7 +459,7 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
           filter(id > 10) %>%
           # add next fixture so I don't need to do the same thing for both train- and score-df
           #union(score_games %>% inner_join(teams_next_game %>% as.data.frame %>% select(id) %>% distinct, by = c("id" = "id"))) %>% # can be more than 10 games since they donät finish the rounds at the same time, but it doesn't matter here.
-          left_join(team_form %>%
+          inner_join(team_form %>%
                       select(
                         -played_at_home,
                         -id,
@@ -480,7 +480,7 @@ create_train_and_score_df <- function(seasons = c(20, 21, 22), score_seasons = c
                       ) %>% rename_with(.fn = ~ paste0(.x, "_team_h"))
                     , by = c("team_h" = "team_team_h", "id" = "next_fixture_team_h")) %>%
           
-          left_join(team_form %>%
+          inner_join(team_form %>%
                       select(
                         -played_at_home,
                         -id,
@@ -522,4 +522,4 @@ df <- do.call("rbind", df_list)
 
 write.csv2(df, file = "train_score.csv")
 
-
+# df %>% filter(is.na(result)) %>% View()
