@@ -1,6 +1,6 @@
 
 installed_packages <- installed.packages()
-needed_packages <- c("jsonlite", "dplyr", "dbplyr", "zoo")
+needed_packages <- c("jsonlite", "dplyr", "dbplyr", "zoo", "curl", "plyr")
 
 for(i in 1:length(needed_packages)){
   if(needed_packages[i] %in% installed_packages){
